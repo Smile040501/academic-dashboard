@@ -4,5 +4,7 @@ import DocumentType from "./DocumentType";
 
 // List of all approved courses
 export interface CourseMaster extends DocumentType<CourseMaster> {
-    courses: Types.ObjectId;
+    courses: Types.ObjectId[];
+    createdAt: string;
+    updatedAt: string;
 }

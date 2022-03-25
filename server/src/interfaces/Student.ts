@@ -1,5 +1,6 @@
-import DocumentType from "./DocumentType";
 import { Types } from "mongoose";
+
+import DocumentType from "./DocumentType";
 
 export interface Student extends DocumentType<Student> {
     name: string;
@@ -14,4 +15,6 @@ export interface Student extends DocumentType<Student> {
         // enrolled: boolean;
         semester: Types.ObjectId; // semester id
     }[];
+    createdAt: string;
+    updatedAt: string;
 }

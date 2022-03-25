@@ -1,48 +1,27 @@
 import { buildSchema } from "graphql";
 
+import enums from "./enums";
+import types from "./types";
+import inputTypes from "./inputTypes";
+
 export default buildSchema(`
-    enum CourseType {
-        COMMON
-        PM
-        PME
-        HSE
-        SME
-        PMT
-        OE
-        PROJECT
-    }
-
-    enum SemesterName {
-        FALL
-        SPRING
-        SUMMER
-    }
-
-    type Course {
-        _id: ID!
-        name: String!
-        code: String!
-        credits: [Int]!
-        description: String
-        prerequisites: [Course]
-        corequisites: [Course]
-        ctype: CourseType!
-        syllabus: String!
-        createdAt: String!
-        updatedAt: String!
-    }
-
-    input RecommendationInput {
-        email: String!
-        semesterName: SemesterName!
-        year: Int!
-    }
+    ${enums}
+    ${types}
+    ${inputTypes}
 
     type RootQuery {
         showRecommendedCourses(inp: RecommendationInput): [Course!]!
     }
 
+    type RootMutation {
+        addCourse(courseInput: CourseInput): Course!
+        addCurriculum(curriculumInput: CurriculumInput): Curriculum!
+        addSemester(semesterInput: SemesterInput): Semester!
+        addStudent(studentInput: StudentInput): Student!
+    }
+
     schema {
         query: RootQuery
+        mutation: RootMutation
     }
 `);

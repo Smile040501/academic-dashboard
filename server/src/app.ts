@@ -24,7 +24,7 @@ const PORT = process.env.PORT || 3000;
 (async () => {
     try {
         await mongoose.connect(
-            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.lnjtv.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.msj10.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`
         );
         app.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);

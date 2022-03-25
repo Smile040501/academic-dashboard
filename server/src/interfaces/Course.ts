@@ -2,15 +2,15 @@ import { Types } from "mongoose";
 
 import DocumentType from "./DocumentType";
 
-enum CourseType {
-    COMMON,
-    PM,
-    PME,
-    HSE,
-    SME,
-    PMT,
-    OE,
-    PROJECT,
+export enum CourseType {
+    COMMON = "COMMON",
+    PM = "PM",
+    PME = "PME",
+    HSE = "HSE",
+    SME = "SME",
+    PMT = "PMT",
+    OE = "OE",
+    PROJECT = "PROJECT",
 }
 
 export interface Course extends DocumentType<Course> {
@@ -23,4 +23,6 @@ export interface Course extends DocumentType<Course> {
     // department?: string;
     ctype: CourseType;
     syllabus: string; // link
+    createdAt: string;
+    updatedAt: string;
 }
