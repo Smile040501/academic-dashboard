@@ -1,39 +1,15 @@
+import { transformCourse } from "./common";
 import { Course } from "../../interfaces/Course";
 import CourseModel from "../../models/course";
 
 const addCourse = async (args: { courseInput: Course }, _: Request) => {
     // TODO: Add this course to course master as well
     try {
-        const {
-            name,
-            code,
-            credits,
-            description,
-            prerequisites,
-            corequisites,
-            ctype,
-            syllabus,
-        } = args.courseInput;
-
-        const course = new CourseModel({
-            name,
-            code,
-            credits,
-            description,
-            prerequisites,
-            corequisites,
-            ctype,
-            syllabus,
-        });
+        const course = new CourseModel(args.courseInput);
 
         const createdCourse = await course.save();
 
-        return {
-            ...createdCourse._doc,
-            _id: createdCourse._id.toString(),
-            createdAt: createdCourse.createdAt.toISOString(),
-            updatedAt: createdCourse.updatedAt.toISOString(),
-        };
+        return transformCourse(createdCourse);
     } catch (error) {
         throw error;
     }

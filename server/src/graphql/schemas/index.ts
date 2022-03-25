@@ -10,7 +10,8 @@ export default buildSchema(`
     ${inputTypes}
 
     type RootQuery {
-        showRecommendedCourses(inp: RecommendationInput): [Course!]!
+        showEligibleCourses(inp: RecommendationInput): [Course!]!
+        # showAvailableCourses(inp)
     }
 
     type RootMutation {
