@@ -16,6 +16,7 @@ export default buildSchema(`
 
     type RootMutation {
         addCourse(courseInput: CourseInput): Course!
+        addCourses(coursesInput: [CourseInput]): [Course!]!
         addCurriculum(curriculumInput: CurriculumInput): Curriculum!
         addSemester(semesterInput: SemesterInput): Semester!
         addStudent(studentInput: StudentInput): Student!

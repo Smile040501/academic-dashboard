@@ -13,13 +13,6 @@ const types = `
         updatedAt: String!
     }
 
-    type CourseMaster {
-        _id: ID!
-        courses: [Course!]!
-        createdAt: String!
-        updatedAt: String!
-    }
-
     type Curriculum {
         _id: ID!
         department: String!

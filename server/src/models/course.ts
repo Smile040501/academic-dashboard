@@ -1,9 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 import { Course } from "../interfaces/Course";
 import { CourseType } from "../interfaces/Course";
 
-const courseSchema = new Schema<Course>(
+const courseSchema = new Schema<Course<Types.ObjectId>>(
     {
         name: {
             type: String,
@@ -50,4 +50,4 @@ const courseSchema = new Schema<Course>(
     { timestamps: true }
 );
 
-export default model<Course>("Course", courseSchema);
+export default model<Course<Types.ObjectId>>("Course", courseSchema);

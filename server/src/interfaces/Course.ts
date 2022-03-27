@@ -1,5 +1,3 @@
-import { Types } from "mongoose";
-
 import DocumentType from "./DocumentType";
 
 export enum CourseType {
@@ -13,13 +11,13 @@ export enum CourseType {
     PROJECT = "PROJECT",
 }
 
-export interface Course extends DocumentType<Course> {
+export interface Course<T> extends DocumentType<Course<T>> {
     name: string;
     code: string;
     credits: [number, number, number, number]; // L-T-P-C format
     description?: string;
-    prerequisites: Types.ObjectId[]; // could be subjective terms, not exact course
-    corequisites: Types.ObjectId[];
+    prerequisites: T[]; // could be subjective terms, not exact course
+    corequisites: T[];
     // department?: string;
     ctype: CourseType;
     syllabus: string; // link

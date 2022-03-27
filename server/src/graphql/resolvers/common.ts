@@ -4,7 +4,7 @@ import { Course } from "../../interfaces/Course";
 import CourseModel from "../../models/course";
 import { dateToString } from "../../utils/date";
 
-export const getCourses = async (cids: Types.ObjectId[]) => {
+export const getCourses = async (cids: Types.ObjectId[]): Promise<any> => {
     try {
         const courses = await CourseModel.find({ _id: { $in: cids } });
         return courses.map(transformCourse);
@@ -13,21 +13,19 @@ export const getCourses = async (cids: Types.ObjectId[]) => {
     }
 };
 
-export const getCourse = async (cid: Types.ObjectId) => {
+export const getCourse = async (cid: Types.ObjectId): Promise<any> => {
     try {
         const course = await CourseModel.findById(cid);
-
         if (!course) {
             throw new Error("Course not found");
         }
-
         return transformCourse(course);
     } catch (error) {
         throw error;
     }
 };
 
-export const transformCourse = async (course: Course): Promise<any> => {
+export const transformCourse = (course: Course<Types.ObjectId>) => {
     try {
         return {
             ...course._doc,
@@ -40,3 +38,8 @@ export const transformCourse = async (course: Course): Promise<any> => {
         throw error;
     }
 };
+
+// transformCurriculum -> getCourses -> transformCourse
+// transformSemester -> getCourse -> transformCourse
+// transformStudent -> getCourse -> transformCourse
+//                  -> getSemester -> transformSemester

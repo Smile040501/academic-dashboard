@@ -4,24 +4,20 @@ const inputTypes = `
         code: String!
         credits: [Int!]!
         description: String
-        prerequisites: [ID!]!
-        corequisites: [ID!]!
+        prerequisites: [String!]!   # Course-code
+        corequisites: [String!]!    # Course-code
         ctype: String!
         syllabus: String!
     }
 
-    input CourseMasterInput {
-        courses: [ID!]!
-    }
-
     input CurriculumInput {
         department: String!
-        pm: [ID!]!
-        pme: [ID!]!
-        hse: [ID!]!
-        sme: [ID!]!
-        pmt: [ID!]!
-        oe: [ID!]!
+        pm: [String!]!      # Course-code
+        pme: [String!]!
+        hse: [String!]!
+        sme: [String!]!
+        pmt: [String!]!
+        oe: [String!]!
     }
 
     input SemesterCourseInput {
@@ -37,9 +33,9 @@ const inputTypes = `
     }
 
     input StudentCourseInput {
-        course: ID!
+        course: String!     # Course-code
         completed: Boolean!
-        semester: String!
+        semester: ID!
     }
 
     input StudentInput {
