@@ -1,8 +1,8 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 import { Curriculum } from "../interfaces/Curriculum";
 
-const curriculumSchema = new Schema<Curriculum>(
+const curriculumSchema = new Schema<Curriculum<Types.ObjectId>>(
     {
         department: {
             type: String,
@@ -48,4 +48,7 @@ const curriculumSchema = new Schema<Curriculum>(
     { timestamps: true }
 );
 
-export default model<Curriculum>("Curriculum", curriculumSchema);
+export default model<Curriculum<Types.ObjectId>>(
+    "Curriculum",
+    curriculumSchema
+);

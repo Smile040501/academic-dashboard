@@ -1,5 +1,3 @@
-import { Types } from "mongoose";
-
 import DocumentType from "./DocumentType";
 
 export enum SemesterType {
@@ -8,11 +6,11 @@ export enum SemesterType {
     SUMMER = "SUMMER",
 }
 
-export interface Semester extends DocumentType<Semester> {
+export interface Semester<T> extends DocumentType<Semester<T>> {
     semesterType: SemesterType;
     year: number;
     coursesOffered: {
-        course: Types.ObjectId; // course id
+        course: T; // course id
         slots: string[];
         faculty: string;
     }[];

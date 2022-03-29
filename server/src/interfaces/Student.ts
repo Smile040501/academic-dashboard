@@ -1,8 +1,6 @@
-import { Types } from "mongoose";
-
 import DocumentType from "./DocumentType";
 
-export interface Student extends DocumentType<Student> {
+export interface Student<T, U> extends DocumentType<Student<T, U>> {
     name: string;
     email: string;
     // googleId: string;
@@ -10,10 +8,10 @@ export interface Student extends DocumentType<Student> {
     department: string;
     courses: {
         // course, semester will be unique
-        course: Types.ObjectId; // course id
+        course: T; // course id
         completed: boolean;
         // enrolled: boolean;
-        semester: Types.ObjectId; // semester id
+        semester: U; // semester id
     }[];
     createdAt: string;
     updatedAt: string;

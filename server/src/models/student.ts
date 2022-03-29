@@ -1,8 +1,8 @@
-import { Schema, model } from "mongoose";
+import { Types, Schema, model } from "mongoose";
 
 import { Student } from "../interfaces/Student";
 
-const studentSchema = new Schema<Student>(
+const studentSchema = new Schema<Student<Types.ObjectId, Types.ObjectId>>(
     {
         name: {
             type: String,
@@ -40,4 +40,7 @@ const studentSchema = new Schema<Student>(
     { timestamps: true }
 );
 
-export default model<Student>("Student", studentSchema);
+export default model<Student<Types.ObjectId, Types.ObjectId>>(
+    "Student",
+    studentSchema
+);

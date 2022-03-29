@@ -4,7 +4,7 @@ import { transformCourse } from "./common";
 import { Course } from "../../interfaces/Course";
 import CourseModel from "../../models/course";
 
-const findCourseByCode = async (code: string) => {
+export const findCourseByCode = async (code: string) => {
     try {
         const course = await CourseModel.findOne({ code: code.toUpperCase() });
         return course;
