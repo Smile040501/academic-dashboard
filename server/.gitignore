@@ -1,3 +1,6 @@
 node_modules
 dist
 nodemon.json
+.doubts
+.ideas
+.todo

@@ -12,6 +12,7 @@ const courseSchema = new Schema<Course<Types.ObjectId>>(
         code: {
             type: String,
             required: true,
+            unique: true,
         },
         description: {
             type: String,
@@ -34,12 +35,10 @@ const courseSchema = new Schema<Course<Types.ObjectId>>(
             enum: Object.values(CourseType),
             required: true,
         },
-
         syllabus: {
             type: String,
             required: true,
         },
-
         credits: [
             {
                 type: Number,

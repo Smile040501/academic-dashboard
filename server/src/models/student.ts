@@ -11,6 +11,7 @@ const studentSchema = new Schema<Student>(
         email: {
             type: String,
             required: true,
+            unique: true,
         },
         joiningYear: {
             type: Number,

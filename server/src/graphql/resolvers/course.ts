@@ -2,7 +2,8 @@ import mongoose, { Types } from "mongoose";
 
 import { transformCourse } from "./common";
 import { Course } from "../../interfaces/Course";
-import CourseModel from "../../models/course";
+import { CourseModel, StudentModel } from "../../models";
+import { isSubset } from "../../utils/helper";
 
 const findCourseByCode = async (code: string) => {
     try {
@@ -123,4 +124,32 @@ const addCourses = async (
     }
 };
 
-export default { addCourse, addCourses };
+const showAllEligibleCourses = async (args: { email: string }, _: Request) => {
+    try {
+        const { email } = args;
+        const student = await StudentModel.findOne({ email });
+        if (!student) {
+            throw new Error("No student with this email id exists");
+        }
+
+        // TODO: Have it filtered based on a particular semester
+        // TODO: Look for corequisites of a course parallely
+        // TODO: REmove the courses the student has already done.
+        const courses = await CourseModel.find({});
+
+        const eligibleCourses = courses.filter(
+            (course) =>
+                course.prerequisites.length === 0 ||
+                isSubset<Types.ObjectId>(
+                    student.courses.map((c) => c.course),
+                    course.prerequisites
+                )
+        );
+
+        return eligibleCourses.map(transformCourse);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export default { addCourse, addCourses, showAllEligibleCourses };
