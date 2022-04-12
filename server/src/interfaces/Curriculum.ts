@@ -1,14 +1,12 @@
-import { Types } from "mongoose";
-
 import DocumentType from "./DocumentType";
-export interface Curriculum extends DocumentType<Curriculum> {
+export interface Curriculum<T> extends DocumentType<Curriculum<T>> {
     department: string;
-    pm: Types.ObjectId[]; // course id
-    pme: Types.ObjectId[];
-    hse: Types.ObjectId[];
-    sme: Types.ObjectId[];
-    pmt: Types.ObjectId[];
-    oe: Types.ObjectId[];
+    pm: T[]; // course id
+    pme: T[];
+    hse: T[];
+    sme: T[];
+    pmt: T[];
+    oe: T[];
     createdAt: string;
     updatedAt: string;
 }

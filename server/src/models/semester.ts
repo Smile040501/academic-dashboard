@@ -1,9 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Types, Schema, model } from "mongoose";
 
 import { Semester } from "./../interfaces/Semester";
 import { SemesterType } from "./../interfaces/Semester";
 
-const semesterSchema = new Schema<Semester>(
+const semesterSchema = new Schema<Semester<Types.ObjectId>>(
     {
         semesterType: {
             type: String,
@@ -28,4 +28,4 @@ const semesterSchema = new Schema<Semester>(
     { timestamps: true }
 );
 
-export default model<Semester>("Semester", semesterSchema);
+export default model<Semester<Types.ObjectId>>("Semester", semesterSchema);

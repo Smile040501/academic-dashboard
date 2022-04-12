@@ -5,7 +5,7 @@ import { Course } from "../../interfaces/Course";
 import { CourseModel, StudentModel } from "../../models";
 import { isSubset } from "../../utils/helper";
 
-const findCourseByCode = async (code: string) => {
+export const findCourseByCode = async (code: string) => {
     try {
         const course = await CourseModel.findOne({ code: code.toUpperCase() });
         return course;
