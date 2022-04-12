@@ -34,7 +34,7 @@ const inputTypes = `
 
     input StudentCourseInput {
         course: String!     # Course-code
-        completed: Boolean!
+        grade: String
         semester: ID!
     }
 

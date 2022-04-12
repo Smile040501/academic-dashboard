@@ -10,16 +10,33 @@ export default buildSchema(`
     ${inputTypes}
 
     type RootQuery {
+        showAllCourses(): [Course!]!
         showAllEligibleCourses(email: String): [Course!]!
-        # showAvailableCourses(inp)
     }
 
     type RootMutation {
         addCourse(courseInput: CourseInput): Course!
         addCourses(coursesInput: [CourseInput]): [Course!]!
+        updateCourses(coursesInput: [CourseInput]): [Course!]!
+        addOrUpdateCourses(coursesInput: [CourseInput]): [Course!]!
+        deleteCourses(codes: [String]): [Course!]!
+
         addCurriculum(curriculumInput: CurriculumInput): Curriculum!
+        addCurricula(curriculaInput: [CurriculumInput]): [Curriculum!]!
+        updateCurricula(curriculaInput: [CurriculumInput]): [Curriculum!]!
+        addOrUpdateCurricula(curriculaInput: [CurriculumInput]): [Curriculum!]!
+        deleteCurricula(departments: [String]): [Curriculum!]!
+
         addSemester(semesterInput: SemesterInput): Semester!
+        updateSemester(semesterInput: SemesterInput): Semester!
+        deleteSemester(semesterType: String, year: Int): Semester!
+
         addStudent(studentInput: StudentInput): Student!
+        addStudents(studentsInput: [StudentInput]): [Students!]!
+        updateStudents(studentsInput: [StudentInput]): [Student!]!
+        # updateStudentsGrades
+        addOrUpdateStudents(studentsInput: [StudentInput]): [Student!]!
+        deleteStudents(studentIds: [String]): [Student!]!
     }
 
     schema {

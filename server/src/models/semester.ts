@@ -1,7 +1,6 @@
 import { Types, Schema, model } from "mongoose";
 
-import { Semester } from "./../interfaces/Semester";
-import { SemesterType } from "./../interfaces/Semester";
+import { Semester, SemesterType } from "./../interfaces/Semester";
 
 const semesterSchema = new Schema<Semester<Types.ObjectId>>(
     {
@@ -27,5 +26,7 @@ const semesterSchema = new Schema<Semester<Types.ObjectId>>(
     },
     { timestamps: true }
 );
+
+semesterSchema.index({ semesterType: 1, year: 1 }, { unique: true });
 
 export default model<Semester<Types.ObjectId>>("Semester", semesterSchema);

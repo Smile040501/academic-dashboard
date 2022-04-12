@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
-import { transformSemester } from "./common";
+import { SemesterModel } from "../../models";
 import { Semester } from "../../interfaces/Semester";
-import SemesterModel from "../../models/semester";
+import { transformSemester } from "./common";
 import { findCourseByCode } from "./course";
 
 export const findSemester = async (args: {
@@ -27,13 +27,10 @@ const createSemester = async (
     try {
         // Extracting out the courseID's from the course offered -code
         const sc = semesterInput.coursesOffered;
-        const scIds = [];
-
         const upCoursesOffered = [];
 
         for (let i = 0; i < sc.length; ++i) {
             const course = await findCourseByCode(sc[i].course);
-
             if (!course) {
                 throw new Error(
                     `Course with course-code ${sc[i].course} not found`
@@ -44,26 +41,16 @@ const createSemester = async (
                 ...sc[i],
                 course: course._id,
             });
-
-            scIds.push(course._id);
         }
 
-        // for (let item in sc) {
-        //     const course = await findCourseByCode(`${item['course']}`);
-        //     if (!course) {
-        //         throw new Error(`Course with course-code ${code} not found`);
-        //     }
-        //     scIds.push(course._id);
-        // }
-
-        // Creating a new curriculum
+        // Creating a new semester
         const newSemester = new SemesterModel({
             ...semesterInput,
+            semesterType: semesterInput.semesterType.toUpperCase(),
             coursesOffered: upCoursesOffered,
         });
 
         const createdSemester = await newSemester.save({ session });
-
         return createdSemester;
     } catch (error) {
         throw error;

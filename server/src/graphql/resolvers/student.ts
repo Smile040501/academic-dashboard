@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
+import { StudentModel } from "../../models";
 import { Student } from "../../interfaces/Student";
-import StudentModel from "../../models/student";
 import { transformStudent } from "./common";
 import { findCourseByCode } from "./course";
 import { findSemester } from "./semester";
@@ -13,13 +13,10 @@ const createStudent = async (
     try {
         // Extracting out the courseID's from the student courses
         const sc = studentInput.courses;
-        const scIds = [];
-
         const upStudentCourses = [];
 
         for (let i = 0; i < sc.length; ++i) {
             const course = await findCourseByCode(sc[i].course);
-
             if (!course) {
                 throw new Error(
                     `Course with course-code ${sc[i].course} not found`
@@ -27,10 +24,9 @@ const createStudent = async (
             }
 
             const semester = await findSemester(sc[i].semester);
-
             if (!semester) {
                 throw new Error(
-                    `Semester with semester-code ${sc[i].semester} not found`
+                    `Semester with semester-type ${sc[i].semester.semesterType} and semester-year ${sc[i].semester.year} not found`
                 );
             }
 
@@ -39,12 +35,11 @@ const createStudent = async (
                 course: course._id,
                 semester: semester._id,
             });
-
-            scIds.push(course._id);
         }
 
         const newStudent = new StudentModel({
             ...studentInput,
+            department: studentInput.department.toUpperCase(),
             courses: upStudentCourses,
         });
 

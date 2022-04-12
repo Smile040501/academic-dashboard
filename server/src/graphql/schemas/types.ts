@@ -44,7 +44,7 @@ const types = `
 
     type StudentCourse {
         course: Course!
-        completed: Boolean!
+        grade: String
         semester: Semester!
     }
 

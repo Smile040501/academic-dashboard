@@ -1,75 +1,33 @@
 import mongoose from "mongoose";
 
-import { transformCurriculum } from "./common";
+import { CurriculumModel } from "../../models";
 import { Curriculum } from "../../interfaces/Curriculum";
-import CurriculumModel from "../../models/curriculum";
-import { findCourseByCode } from "./course";
+import { transformCurriculum } from "./common";
+import { getCourses } from "./course";
 
 const createCurriculum = async (
     curriculumInput: Curriculum<string>,
     session: any
 ) => {
     try {
-        // Extracting out the pm,pme,oe,pmt,hse and smeIDs from the course-code
-        const pm = curriculumInput.pm;
-        const pmIds = [];
-        for (let code in pm) {
-            const course = await findCourseByCode(code);
-            if (!course) {
-                throw new Error(`Course with course-code ${code} not found`);
-            }
-            pmIds.push(course._id);
-        }
+        // Extracting out the pm, pme, oe, pmt, hse and smeIDs from the course-code
+        const pmCourses = await getCourses(curriculumInput.pm);
+        const pmIds = pmCourses.map((course) => course._id);
 
-        const pme = curriculumInput.pme;
-        const pmeIds = [];
-        for (let code in pme) {
-            const course = await findCourseByCode(code);
-            if (!course) {
-                throw new Error(`Course with course-code ${code} not found`);
-            }
-            pmeIds.push(course._id);
-        }
+        const pmeCourses = await getCourses(curriculumInput.pme);
+        const pmeIds = pmeCourses.map((course) => course._id);
 
-        const hse = curriculumInput.hse;
-        const hseIds = [];
-        for (let code in hse) {
-            const course = await findCourseByCode(code);
-            if (!course) {
-                throw new Error(`Course with course-code ${code} not found`);
-            }
-            hseIds.push(course._id);
-        }
+        const hseCourses = await getCourses(curriculumInput.hse);
+        const hseIds = hseCourses.map((course) => course._id);
 
-        const sme = curriculumInput.sme;
-        const smeIds = [];
-        for (let code in sme) {
-            const course = await findCourseByCode(code);
-            if (!course) {
-                throw new Error(`Course with course-code ${code} not found`);
-            }
-            smeIds.push(course._id);
-        }
+        const smeCourses = await getCourses(curriculumInput.sme);
+        const smeIds = smeCourses.map((course) => course._id);
 
-        const pmt = curriculumInput.pmt;
-        const pmtIds = [];
-        for (let code in pmt) {
-            const course = await findCourseByCode(code);
-            if (!course) {
-                throw new Error(`Course with course-code ${code} not found`);
-            }
-            pmtIds.push(course._id);
-        }
+        const pmtCourses = await getCourses(curriculumInput.pmt);
+        const pmtIds = pmtCourses.map((course) => course._id);
 
-        const oe = curriculumInput.oe;
-        const oeIds = [];
-        for (let code in oe) {
-            const course = await findCourseByCode(code);
-            if (!course) {
-                throw new Error(`Course with course-code ${code} not found`);
-            }
-            oeIds.push(course._id);
-        }
+        const oeCourses = await getCourses(curriculumInput.oe);
+        const oeIds = oeCourses.map((course) => course._id);
 
         // Creating a new curriculum
         const newCurriculum = new CurriculumModel({

@@ -1,4 +1,5 @@
 import DocumentType from "./DocumentType";
+
 export interface Curriculum<T> extends DocumentType<Curriculum<T>> {
     department: string;
     pm: T[]; // course id

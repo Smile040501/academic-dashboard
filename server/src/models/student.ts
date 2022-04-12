@@ -27,8 +27,8 @@ const studentSchema = new Schema<Student<Types.ObjectId, Types.ObjectId>>(
                     type: Schema.Types.ObjectId, // course id
                     ref: "Course",
                 },
-                completed: {
-                    type: Boolean,
+                grade: {
+                    type: String,
                     default: false,
                 },
                 semester: {

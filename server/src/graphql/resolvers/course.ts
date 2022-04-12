@@ -14,7 +14,23 @@ export const findCourseByCode = async (code: string) => {
     }
 };
 
-const createCourse = async (courseInput: Course<String>, session: any) => {
+export const getCourses = async (coursesCodes: string[]) => {
+    try {
+        const courses = [];
+        for (let code in coursesCodes) {
+            const course = await findCourseByCode(code);
+            if (!course) {
+                throw new Error(`Course with course-code ${code} not found`);
+            }
+            courses.push(course);
+        }
+        return courses;
+    } catch (error) {
+        throw error;
+    }
+};
+
+const createCourse = async (courseInput: Course<string>, session: any) => {
     try {
         // Checking if course with this course-code already exists
         const existingCourse = await findCourseByCode(courseInput.code);
@@ -25,25 +41,11 @@ const createCourse = async (courseInput: Course<String>, session: any) => {
         }
 
         // Extracting out the pre-requisites and corequisites IDs from the course-code
-        const prereqs = courseInput.prerequisites;
-        const prereqsIds = [];
-        for (let code in prereqs) {
-            const course = await findCourseByCode(code);
-            if (!course) {
-                throw new Error(`Course with course-code ${code} not found`);
-            }
-            prereqsIds.push(course._id);
-        }
+        const prereqsCourses = await getCourses(courseInput.prerequisites);
+        const coreqsCourses = await getCourses(courseInput.corequisites);
 
-        const coreqs = courseInput.corequisites;
-        const coreqsIds = [];
-        for (let code in coreqs) {
-            const course = await findCourseByCode(code);
-            if (!course) {
-                throw new Error(`Course with course-code ${code} not found`);
-            }
-            coreqsIds.push(course._id);
-        }
+        const prereqsIds = prereqsCourses.map((course) => course._id);
+        const coreqsIds = coreqsCourses.map((course) => course._id);
 
         // Creating a new course
         const newCourse = new CourseModel({
@@ -61,7 +63,7 @@ const createCourse = async (courseInput: Course<String>, session: any) => {
     }
 };
 
-const addCourse = async (args: { courseInput: Course<String> }, _: Request) => {
+const addCourse = async (args: { courseInput: Course<string> }, _: Request) => {
     try {
         const session = await mongoose.startSession();
         session.startTransaction();
@@ -76,7 +78,7 @@ const addCourse = async (args: { courseInput: Course<String> }, _: Request) => {
 
 // It first initially adds all the courses and then update each course with their pre-requisites
 const addCourses = async (
-    args: { coursesInput: Course<String>[] },
+    args: { coursesInput: Course<string>[] },
     _: Request
 ) => {
     try {

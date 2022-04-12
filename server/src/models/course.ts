@@ -1,7 +1,6 @@
 import { Schema, Types, model } from "mongoose";
 
-import { Course } from "../interfaces/Course";
-import { CourseType } from "../interfaces/Course";
+import { Course, CourseType } from "../interfaces/Course";
 
 const courseSchema = new Schema<Course<Types.ObjectId>>(
     {

@@ -1,14 +1,11 @@
-import { Semester } from "./../../interfaces/Semester";
 import { Types } from "mongoose";
 
+import { CourseModel, SemesterModel } from "../../models";
 import { Course } from "../../interfaces/Course";
-import CourseModel from "../../models/course";
-
-import SemesterModel from "../../models/semester";
-import { dateToString } from "../../utils/date";
-
 import { Curriculum } from "../../interfaces/Curriculum";
+import { Semester } from "./../../interfaces/Semester";
 import { Student } from "../../interfaces/Student";
+import { dateToString } from "../../utils/date";
 
 export const getCourses = async (cids: Types.ObjectId[]): Promise<any> => {
     try {
@@ -109,8 +106,3 @@ export const transformStudent = (
         throw error;
     }
 };
-
-// transformCurriculum -> getCourses -> transformCourse
-// transformSemester -> getCourse -> transformCourse
-// transformStudent -> getCourse -> transformCourse
-//                  -> getSemester -> transformSemester
