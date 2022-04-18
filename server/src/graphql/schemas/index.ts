@@ -10,8 +10,10 @@ export default buildSchema(`
     ${inputTypes}
 
     type RootQuery {
-        showAllCourses(): [Course!]!
-        showAllEligibleCourses(email: String): [Course!]!
+        getCourse(code: String!): Course!
+        showAllEligibleCourses(email: String): EligibleCourses!
+
+        getCurriculum(department: String!, ctype: CurriculumType!): Curriculum!
     }
 
     type RootMutation {
@@ -32,7 +34,7 @@ export default buildSchema(`
         deleteSemester(semesterType: String, year: Int): Semester!
 
         addStudent(studentInput: StudentInput): Student!
-        addStudents(studentsInput: [StudentInput]): [Students!]!
+        addStudents(studentsInput: [StudentInput]): [Student!]!
         updateStudents(studentsInput: [StudentInput]): [Student!]!
         # updateStudentsGrades
         addOrUpdateStudents(studentsInput: [StudentInput]): [Student!]!

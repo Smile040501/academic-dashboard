@@ -13,15 +13,22 @@ const types = `
         updatedAt: String!
     }
 
+    type CurriculumEntry {
+        requiredCredits: Int!
+        courses: [Course!]!
+    }
+
     type Curriculum {
         _id: ID!
         department: String!
-        pm: [Course!]!
-        pme: [Course!]!
-        hse: [Course!]!
-        sme: [Course!]!
-        pmt: [Course!]!
-        oe: [Course!]!
+        ctype: CurriculumType!
+        totalCredits: Int!
+        pm: CurriculumEntry!
+        pme: CurriculumEntry!
+        hse: CurriculumEntry!
+        sme: CurriculumEntry!
+        pmt: CurriculumEntry!
+        oe: CurriculumEntry!
         createdAt: String!
         updatedAt: String!
     }
@@ -54,9 +61,29 @@ const types = `
         email: String!
         joiningYear: Int!
         department: String!
+        curriculum: Curriculum!
         courses: [StudentCourse!]!
         createdAt: String!
         updatedAt: String!
+    }
+
+    type EligibleCourseEntry {
+        requiredCredits: Int!
+        completedCredits: Int!
+        completedCourses: [Course!]!
+        pendingCourses: [Course!]!
+        eligibleCourses: [Course!]!
+    }
+
+    type EligibleCourses {
+        totalCredits: Int!
+        completedCredits: Int!
+        pm: EligibleCourseEntry!
+        pme: EligibleCourseEntry!
+        hse: EligibleCourseEntry!
+        sme: EligibleCourseEntry!
+        pmt: EligibleCourseEntry!
+        oe: EligibleCourseEntry!
     }
 `;
 

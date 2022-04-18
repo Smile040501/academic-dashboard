@@ -10,14 +10,21 @@ const inputTypes = `
         syllabus: String!
     }
 
+    input CurriculumInputEntry {
+        requiredCredits: Int!
+        courses: [String!]!
+    }
+
     input CurriculumInput {
         department: String!
-        pm: [String!]!      # Course-code
-        pme: [String!]!
-        hse: [String!]!
-        sme: [String!]!
-        pmt: [String!]!
-        oe: [String!]!
+        ctype: String!
+        totalCredits: Int!
+        pm: CurriculumInputEntry      # Course-code
+        pme: CurriculumInputEntry
+        hse: CurriculumInputEntry
+        sme: CurriculumInputEntry
+        pmt: CurriculumInputEntry
+        oe: CurriculumInputEntry
     }
 
     input SemesterCourseInput {
@@ -43,6 +50,7 @@ const inputTypes = `
         email: String!
         joiningYear: Int!
         department: String!
+        curriculum: String!
         courses: [StudentCourseInput!]!
     }
 

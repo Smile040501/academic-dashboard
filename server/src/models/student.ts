@@ -21,6 +21,11 @@ const studentSchema = new Schema<Student<Types.ObjectId, Types.ObjectId>>(
             type: String,
             required: true,
         },
+        curriculum: {
+            type: Schema.Types.ObjectId,
+            ref: "Curriculum",
+            required: true,
+        },
         courses: [
             {
                 course: {
@@ -29,7 +34,7 @@ const studentSchema = new Schema<Student<Types.ObjectId, Types.ObjectId>>(
                 },
                 grade: {
                     type: String,
-                    default: false,
+                    default: "",
                 },
                 semester: {
                     type: Schema.Types.ObjectId, // semester id

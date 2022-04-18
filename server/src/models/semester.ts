@@ -8,6 +8,7 @@ const semesterSchema = new Schema<Semester<Types.ObjectId>>(
             type: String,
             enum: Object.values(SemesterType),
             required: true,
+            uppercase: true,
         },
         year: {
             type: Number,

@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 import DocumentType from "./DocumentType";
 
 export enum CourseType {
@@ -12,6 +14,7 @@ export enum CourseType {
 }
 
 export interface Course<T> extends DocumentType<Course<T>> {
+    id: Types.ObjectId;
     name: string;
     code: string;
     credits: [number, number, number, number]; // L-T-P-C format
@@ -23,4 +26,23 @@ export interface Course<T> extends DocumentType<Course<T>> {
     syllabus: string; // link
     createdAt: string;
     updatedAt: string;
+}
+
+export interface EligibleCourseEntry {
+    requiredCredits: number;
+    completedCredits: number;
+    completedCourses: Types.ObjectId[];
+    pendingCourses: Types.ObjectId[];
+    eligibleCourses: Types.ObjectId[];
+}
+
+export interface EligibleCourses {
+    totalCredits: number;
+    completedCredits: number;
+    pm: EligibleCourseEntry;
+    pme: EligibleCourseEntry;
+    hse: EligibleCourseEntry;
+    sme: EligibleCourseEntry;
+    pmt: EligibleCourseEntry;
+    oe: EligibleCourseEntry;
 }

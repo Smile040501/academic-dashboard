@@ -1,7 +1,11 @@
 import { Types } from "mongoose";
 
 import { CourseModel, SemesterModel } from "../../models";
-import { Course } from "../../interfaces/Course";
+import {
+    Course,
+    EligibleCourseEntry,
+    EligibleCourses,
+} from "../../interfaces/Course";
 import { Curriculum } from "../../interfaces/Curriculum";
 import { Semester } from "./../../interfaces/Semester";
 import { Student } from "../../interfaces/Student";
@@ -48,6 +52,40 @@ export const transformCourse = (course: Course<Types.ObjectId>) => {
             corequisites: getCourses.bind(this, course.corequisites),
             createdAt: dateToString(course.createdAt),
             updatedAt: dateToString(course.updatedAt),
+        };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const transformEligibleCourseEntry = (
+    courseEntry: EligibleCourseEntry
+) => {
+    try {
+        return {
+            ...courseEntry,
+            completedCourses: getCourses.bind(
+                this,
+                courseEntry.completedCourses
+            ),
+            pendingCourses: getCourses.bind(this, courseEntry.pendingCourses),
+            eligibleCourses: getCourses.bind(this, courseEntry.eligibleCourses),
+        };
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const transformEligibleCourses = (courses: EligibleCourses) => {
+    try {
+        return {
+            ...courses,
+            pm: transformEligibleCourseEntry(courses.pm),
+            pme: transformEligibleCourseEntry(courses.pme),
+            hse: transformEligibleCourseEntry(courses.hse),
+            sme: transformEligibleCourseEntry(courses.sme),
+            pmt: transformEligibleCourseEntry(courses.pmt),
+            oe: transformEligibleCourseEntry(courses.oe),
         };
     } catch (error) {
         throw error;

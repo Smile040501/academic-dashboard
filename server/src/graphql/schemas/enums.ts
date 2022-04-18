@@ -15,6 +15,10 @@ const enums = `
         SPRING
         SUMMER
     }
+
+    enum CurriculumType {
+        MAJOR
+    }
 `;
 
 export default enums;

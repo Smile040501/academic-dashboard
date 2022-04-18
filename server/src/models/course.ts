@@ -12,6 +12,7 @@ const courseSchema = new Schema<Course<Types.ObjectId>>(
             type: String,
             required: true,
             unique: true,
+            uppercase: true,
         },
         description: {
             type: String,
@@ -33,6 +34,7 @@ const courseSchema = new Schema<Course<Types.ObjectId>>(
             type: String,
             enum: Object.values(CourseType),
             required: true,
+            uppercase: true,
         },
         syllabus: {
             type: String,

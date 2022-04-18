@@ -1,6 +1,6 @@
 import { Schema, Types, model } from "mongoose";
 
-import { Curriculum } from "../interfaces/Curriculum";
+import { Curriculum, CurriculumType } from "../interfaces/Curriculum";
 
 const curriculumSchema = new Schema<Curriculum<Types.ObjectId>>(
     {
@@ -8,45 +8,93 @@ const curriculumSchema = new Schema<Curriculum<Types.ObjectId>>(
             type: String,
             required: true,
         },
-        pm: [
-            {
-                type: Schema.Types.ObjectId, // course id
-                ref: "Course",
+        ctype: {
+            type: String,
+            enum: Object.values(CurriculumType),
+            required: true,
+            uppercase: true,
+        },
+        totalCredits: {
+            type: Number,
+            required: true,
+        },
+        pm: {
+            requiredCredits: {
+                type: Number,
+                required: true,
             },
-        ],
-        pme: [
-            {
-                type: Schema.Types.ObjectId, // course id
-                ref: "Course",
+            courses: [
+                {
+                    type: Schema.Types.ObjectId, // course id
+                    ref: "Course",
+                },
+            ],
+        },
+        pme: {
+            requiredCredits: {
+                type: Number,
+                required: true,
             },
-        ],
-        hse: [
-            {
-                type: Schema.Types.ObjectId, // course id
-                ref: "Course",
+            courses: [
+                {
+                    type: Schema.Types.ObjectId, // course id
+                    ref: "Course",
+                },
+            ],
+        },
+        hse: {
+            requiredCredits: {
+                type: Number,
+                required: true,
             },
-        ],
-        sme: [
-            {
-                type: Schema.Types.ObjectId, // course id
-                ref: "Course",
+            courses: [
+                {
+                    type: Schema.Types.ObjectId, // course id
+                    ref: "Course",
+                },
+            ],
+        },
+        sme: {
+            requiredCredits: {
+                type: Number,
+                required: true,
             },
-        ],
-        pmt: [
-            {
-                type: Schema.Types.ObjectId, // course id
-                ref: "Course",
+            courses: [
+                {
+                    type: Schema.Types.ObjectId, // course id
+                    ref: "Course",
+                },
+            ],
+        },
+        pmt: {
+            requiredCredits: {
+                type: Number,
+                required: true,
             },
-        ],
-        oe: [
-            {
-                type: Schema.Types.ObjectId, // course id
-                ref: "Course",
+            courses: [
+                {
+                    type: Schema.Types.ObjectId, // course id
+                    ref: "Course",
+                },
+            ],
+        },
+        oe: {
+            requiredCredits: {
+                type: Number,
+                required: true,
             },
-        ],
+            courses: [
+                {
+                    type: Schema.Types.ObjectId, // course id
+                    ref: "Course",
+                },
+            ],
+        },
     },
     { timestamps: true }
 );
+
+curriculumSchema.index({ department: 1, type: 1 }, { unique: true });
 
 export default model<Curriculum<Types.ObjectId>>(
     "Curriculum",
