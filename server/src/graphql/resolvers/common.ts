@@ -96,12 +96,12 @@ export const transformCurriculum = (curriculum: Curriculum<Types.ObjectId>) => {
     try {
         return {
             ...curriculum._doc,
-            pm: getCourses.bind(this, curriculum.pm),
-            pme: getCourses.bind(this, curriculum.pme),
-            hse: getCourses.bind(this, curriculum.hse),
-            sme: getCourses.bind(this, curriculum.sme),
-            pmt: getCourses.bind(this, curriculum.pmt),
-            oe: getCourses.bind(this, curriculum.oe),
+            pm: getCourses.bind(this, curriculum.pm.courses),
+            pme: getCourses.bind(this, curriculum.pme.courses),
+            hse: getCourses.bind(this, curriculum.hse.courses),
+            sme: getCourses.bind(this, curriculum.sme.courses),
+            pmt: getCourses.bind(this, curriculum.pmt.courses),
+            oe: getCourses.bind(this, curriculum.oe.courses),
             createdAt: dateToString(curriculum.createdAt),
             updatedAt: dateToString(curriculum.updatedAt),
         };

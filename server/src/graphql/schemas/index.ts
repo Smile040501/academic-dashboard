@@ -35,6 +35,7 @@ export default buildSchema(`
 
         addStudent(studentInput: StudentInput): Student!
         addStudents(studentsInput: [StudentInput]): [Student!]!
+        updateStudent(studentInput: StudentInput): Student!
         updateStudents(studentsInput: [StudentInput]): [Student!]!
         # updateStudentsGrades
         addOrUpdateStudents(studentsInput: [StudentInput]): [Student!]!
