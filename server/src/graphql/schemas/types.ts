@@ -85,6 +85,11 @@ const types = `
         pmt: EligibleCourseEntry!
         oe: EligibleCourseEntry!
     }
+
+    type LoginResponse {
+        token: String!
+        tokenExpiration: Int!
+    }
 `;
 
 export default types;

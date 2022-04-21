@@ -11,6 +11,8 @@ import { Semester } from "./../../interfaces/Semester";
 import { Student } from "../../interfaces/Student";
 import { dateToString } from "../../utils/date";
 
+export const ADMIN_EMAIL = "";
+
 export const getCourses = async (cids: Types.ObjectId[]): Promise<any> => {
     try {
         const courses = await CourseModel.find({ _id: { $in: cids } });

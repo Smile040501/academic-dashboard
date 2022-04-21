@@ -12,6 +12,7 @@ export default buildSchema(`
     type RootQuery {
         getCourse(code: String!): Course!
         showAllEligibleCourses(email: String): EligibleCourses!
+        login(email: String!, tokenId: String!): LoginResponse!
 
         getCurriculum(department: String!, ctype: CurriculumType!): Curriculum!
     }
