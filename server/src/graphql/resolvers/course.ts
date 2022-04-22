@@ -94,7 +94,7 @@ export const createCourse = async (
             );
         }
 
-        // Extracting out the pre-requisites and corequisites IDs from the course-code
+        // Extracting out the pre-requisites and co-requisites IDs from the course-code
         const prereqsCourses = await getCourses(courseInput.prerequisites);
         const coreqsCourses = await getCourses(courseInput.corequisites);
 

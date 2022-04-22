@@ -1,4 +1,3 @@
-import { Course } from "./../../interfaces/Course";
 import mongoose from "mongoose";
 
 import { CurriculumModel } from "../../models";
@@ -45,17 +44,25 @@ const createCurriculum = async (
         const oeCourses = await getCourses(curriculumInput.oe.courses);
         const oeIds = oeCourses.map((course) => course._id);
 
-        // TODO: here pme etc.. in CurriculumModel is of type{reqCredits, courseIds} see once.
+        // why this is not able to defined in newCurriculum
+        const pmR = curriculumInput.pm.requiredCredits;
+        const pmeR = curriculumInput.pme.requiredCredits;
+        const hseR = curriculumInput.hse.requiredCredits;
+        const smeR = curriculumInput.sme.requiredCredits;
+        const pmtR = curriculumInput.pmt.requiredCredits;
+        const oeR = curriculumInput.oe.requiredCredits;
+
         // Creating a new curriculum
         const newCurriculum = new CurriculumModel({
             ...curriculumInput,
             department: curriculumInput.department.toUpperCase(),
-            pm: pmIds,
-            pme: pmeIds,
-            oe: oeIds,
-            hse: hseIds,
-            pmt: pmtIds,
-            sme: smeIds,
+            pm: { pmR, pmIds },
+            // pme:{ curriculumInput.pme.requiredCredits, pmeIds},
+            pme: { pmeR, pmeIds },
+            oe: { oeR, oeIds },
+            hse: { hseR, hseIds },
+            pmt: { pmtR, pmtIds },
+            sme: { smeR, smeIds },
         });
 
         const createdCurriculum = await newCurriculum.save({ session });
@@ -80,6 +87,77 @@ const addCurriculum = async (
         await session.commitTransaction();
 
         return transformCurriculum(createdCurriculum);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const UpdateCurriculum = async (curriculumInput: Curriculum<string>) => {
+    try {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+        const ctype = curriculumInput.ctype;
+        const department = curriculumInput.department;
+        const existingCurriculum = await findCurriculum({
+            ctype,
+            department,
+        });
+
+        if (existingCurriculum) {
+            const pmCourses = await getCourses(curriculumInput.pm.courses);
+            const pmIds = pmCourses.map((course) => course._id);
+
+            const pmeCourses = await getCourses(curriculumInput.pme.courses);
+            const pmeIds = pmeCourses.map((course) => course._id);
+
+            const hseCourses = await getCourses(curriculumInput.hse.courses);
+            const hseIds = hseCourses.map((course) => course._id);
+
+            const smeCourses = await getCourses(curriculumInput.sme.courses);
+            const smeIds = smeCourses.map((course) => course._id);
+
+            const pmtCourses = await getCourses(curriculumInput.pmt.courses);
+            const pmtIds = pmtCourses.map((course) => course._id);
+
+            const oeCourses = await getCourses(curriculumInput.oe.courses);
+            const oeIds = oeCourses.map((course) => course._id);
+
+            // why this is not able to defined in newCurriculum
+            const pmR = curriculumInput.pm.requiredCredits;
+            const pmeR = curriculumInput.pme.requiredCredits;
+            const hseR = curriculumInput.hse.requiredCredits;
+            const smeR = curriculumInput.sme.requiredCredits;
+            const pmtR = curriculumInput.pmt.requiredCredits;
+            const oeR = curriculumInput.oe.requiredCredits;
+
+            existingCurriculum.pm.requiredCredits = pmR;
+            existingCurriculum.pm.courses = pmIds;
+
+            existingCurriculum.pme.requiredCredits = pmeR;
+            existingCurriculum.pme.courses = pmeIds;
+
+            existingCurriculum.oe.requiredCredits = oeR;
+            existingCurriculum.oe.courses = oeIds;
+
+            existingCurriculum.hse.requiredCredits = hseR;
+            existingCurriculum.hse.courses = hseIds;
+
+            existingCurriculum.sme.requiredCredits = smeR;
+            existingCurriculum.sme.courses = smeIds;
+
+            existingCurriculum.pmt.requiredCredits = pmtR;
+            existingCurriculum.pmt.courses = pmtIds;
+            const updatedCurriculum = await existingCurriculum.save({
+                session,
+            });
+
+            await session.commitTransaction();
+            return transformCurriculum(updatedCurriculum);
+        } else {
+            throw new Error(
+                `Curriculum with type ${ctype} and department ${department} not found`
+            );
+        }
     } catch (error) {
         throw error;
     }
@@ -117,4 +195,9 @@ export const deleteCurriculum = async (
         throw error;
     }
 };
-export default { addCurriculum, deleteCurriculum };
+export default {
+    findCurriculum,
+    addCurriculum,
+    UpdateCurriculum,
+    deleteCurriculum,
+};
