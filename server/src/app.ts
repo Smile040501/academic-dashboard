@@ -1,89 +1,65 @@
-import express, {
-    Request,
-    Response,
-    NextFunction,
-    ErrorRequestHandler,
-} from "express";
-import bodyParser from "body-parser";
-import { graphqlHTTP } from "express-graphql";
+import express from "express";
 import mongoose from "mongoose";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import compression from "compression";
+import mongoSanitize from "express-mongo-sanitize";
 
-import graphqlSchema from "./graphql/schemas";
-import graphqlResolver from "./graphql/resolvers";
+import { connectDB, corsOptions } from "./config";
+import {
+    credentials,
+    errorHandler,
+    graphqlHandler,
+    rateLimitHandler,
+    verifyJWT,
+} from "./middlewares";
 
 const app = express();
 
-app.use(bodyParser.json());
+// Connect to MongoDB
+connectDB();
 
-app.use((req: Request, res: Response, next: NextFunction) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader(
-        "Access-Control-Allow-Methods",
-        "GET, POST, PUT, PATCH, DELETE"
-    );
-    res.setHeader(
-        "Access-Control-Allow-Headers",
-        "Content-Type, Authorization"
-    );
+// Can define rate-limiting as a middleware differently for different requests
+// Don't define it before serving static files
+app.use(rateLimitHandler);
 
-    if (req.method === "OPTIONS") {
-        return res.sendStatus(200);
-    }
-    return next();
-});
+// Add security headers to response
+app.use(helmet());
 
-app.use(
-    "/graphql",
-    graphqlHTTP({
-        schema: graphqlSchema,
-        rootValue: graphqlResolver,
-        graphiql: true,
-        // customFormatErrorFn(err) {
-        //     //* 4
-        //     // Allows to return our own format of error
-        //     // return err; // The default format
+// Compress the response bodies
+app.use(compression());
 
-        //     if (!err.originalError) {
-        //         // Set by express-graphql when it detects error thrown in code either by you or some third party package
-        //         // For technical errors, it wont have original error field
-        //         return err;
-        //     }
+// Prevent MongoDB Operator Injection
+app.use(mongoSanitize());
 
-        //     const data = err.originalError.data;
-        //     const message = err.message || "An error occurred";
-        //     const code = err.originalError.code || 500;
-        //     return {
-        //         message,
-        //         status: code,
-        //         data,
-        //     };
-        // },
-    })
-);
+// Handle options credentials check - before CORS!
+// and fetch cookies credentials requirement
+app.use(credentials);
 
-const errorHandler: ErrorRequestHandler = (err, _, res, _2) => {
-    console.log(err);
-    const status = err.statusCode || 500;
-    const message = err.message;
-    const data = err.data;
-    res.status(status).json({ message, data });
-};
+// Cross Origin Resource Sharing
+app.use(cors(corsOptions));
+
+// built-in middleware to handle urlencoded form data
+// app.use(express.urlencoded({ extended: false }));
+
+// built-in middleware for json
+app.use(express.json());
+
+//middleware for cookies
+app.use(cookieParser());
+
+app.use(verifyJWT);
+
+app.use("/graphql", graphqlHandler);
 
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 8000;
 
-(async () => {
-    try {
-        await mongoose.connect(
-            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.msj10.mongodb.net/${process.env.MONGO_DB}?retryWrites=true&w=majority`
-
-            // `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.w9yxw.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
-        );
-        app.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
-        });
-    } catch (error) {
-        console.log(error);
-    }
-})();
+mongoose.connection.once("open", () => {
+    console.log("Connected to MongoDB!");
+    app.listen(PORT, () => {
+        console.log(`Server is running on the port ${PORT}!`);
+    });
+});

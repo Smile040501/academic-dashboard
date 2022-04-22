@@ -9,9 +9,9 @@ import {
 import { Curriculum } from "../../interfaces/Curriculum";
 import { Semester } from "./../../interfaces/Semester";
 import { Student } from "../../interfaces/Student";
+import { HttpError } from "../../interfaces/HttpError";
 import { dateToString } from "../../utils/date";
-
-export const ADMIN_EMAIL = "";
+import { httpStatusNames, httpStatusTypes } from "../../utils/httpStatus";
 
 export const getCourses = async (cids: Types.ObjectId[]): Promise<any> => {
     try {
@@ -26,7 +26,9 @@ export const getSemester = async (sid: Types.ObjectId): Promise<any> => {
     try {
         const semester = await SemesterModel.findById(sid);
         if (!semester) {
-            throw new Error("Semester not found");
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
         }
         return transformSemester(semester);
     } catch (error) {
@@ -38,7 +40,9 @@ export const getCourse = async (cid: Types.ObjectId): Promise<any> => {
     try {
         const course = await CourseModel.findById(cid);
         if (!course) {
-            throw new Error("Course not found");
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
         }
         return transformCourse(course);
     } catch (error) {

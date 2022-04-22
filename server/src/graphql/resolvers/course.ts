@@ -6,6 +6,8 @@ import { Curriculum } from "./../../interfaces/Curriculum";
 import { StudentCourse } from "../../interfaces/Student";
 import { CourseModel, StudentModel } from "../../models";
 import { isSubset } from "../../utils/helper";
+import { HttpError } from "../../interfaces/HttpError";
+import { httpStatusNames, httpStatusTypes } from "../../utils/httpStatus";
 
 export const findCourseByCode = async (code: string) => {
     try {
@@ -22,7 +24,9 @@ export const getCourses = async (coursesCodes: string[]) => {
         for (let code in coursesCodes) {
             const course = await findCourseByCode(code);
             if (!course) {
-                throw new Error(`Course with course-code ${code} not found`);
+                const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+                const error = new HttpError(nf.message, nf.status);
+                throw error;
             }
             courses.push(course);
         }
@@ -68,7 +72,9 @@ export const getEligibleCourses = async (
         for (let courseId of allCourses) {
             const course = await CourseModel.findById(courseId);
             if (!course) {
-                throw new Error("Course not found");
+                const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+                const error = new HttpError(nf.message, nf.status);
+                throw error;
             }
             const isEligible = isEligibleCourse(course, completedCourses);
             if (isEligible) {
@@ -89,9 +95,9 @@ export const createCourse = async (
         // Checking if course with this course-code already exists
         const existingCourse = await findCourseByCode(courseInput.code);
         if (existingCourse) {
-            throw new Error(
-                `Course with course-code ${courseInput.code} already exists`
-            );
+            const conflict = httpStatusTypes[httpStatusNames.CONFLICT];
+            const error = new HttpError(conflict.message, conflict.status);
+            throw error;
         }
 
         // Extracting out the pre-requisites and corequisites IDs from the course-code
@@ -124,9 +130,9 @@ export const updateCourse = async (
         // Getting the course with this course-code
         const existingCourse = await findCourseByCode(courseInput.code);
         if (!existingCourse) {
-            throw new Error(
-                `Course with course-code ${courseInput.code} doesn't exists`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
         }
 
         // Extracting out the pre-requisites and corequisites IDs from the course-code
@@ -159,7 +165,9 @@ export const deleteCourse = async (code: string, session: any) => {
         // Getting the course with this course-code
         const existingCourse = await findCourseByCode(code);
         if (!existingCourse) {
-            throw new Error(`Course with course-code ${code} doesn't exists`);
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
         }
 
         // Deleting the course
@@ -175,7 +183,9 @@ const getCourse = async (args: { code: string }, _: Request) => {
     try {
         const course = await findCourseByCode(args.code);
         if (!course) {
-            throw new Error(`Course with course-code ${args.code} not found`);
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
         }
         return transformCourse(course);
     } catch (error) {
@@ -197,7 +207,9 @@ const showAllEligibleCourses = async (args: { email: string }, _: Request) => {
             .populate<{ curriculum: Curriculum<Types.ObjectId> }>("curriculum");
 
         if (!student) {
-            throw new Error("No student with this email id exists");
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
         }
 
         const scurriculum = student.curriculum;
