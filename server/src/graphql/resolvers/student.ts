@@ -5,7 +5,7 @@ import { Student } from "../../interfaces/Student";
 import { transformStudent } from "./common";
 import { findCourseByCode } from "./course";
 import { findSemester } from "./semester";
-import curriculum from "./curriculum";
+import { findCurriculum } from "./curriculum";
 
 export const findStudentByEmail = async (email: string) => {
     try {
@@ -54,6 +54,22 @@ export const createStudent = async (
             department: studentInput.department.toUpperCase(),
             courses: upStudentCourses,
         });
+
+        const ctype = studentInput.curriculum;
+        const department = studentInput.department;
+
+        const newCurriculum = await findCurriculum({
+            department,
+            ctype,
+        });
+
+        if (newCurriculum) {
+            newStudent.curriculum = newCurriculum._id;
+        } else {
+            throw new Error(
+                `Curriculum with type ${ctype} and department ${department} not found`
+            );
+        }
 
         const createdStudent = await newStudent.save({ session });
 
@@ -122,8 +138,22 @@ export const updateStudent = async (
         existingStudent.name = studentInput.name;
         existingStudent.joiningYear = studentInput.joiningYear;
         existingStudent.department = studentInput.department;
-        // NOTE: not handled the curriculum yet (in create student also)
-        // existingStudent.curriculum = studentInput.curriculum;
+
+        const ctype = studentInput.curriculum;
+        const department = studentInput.department;
+
+        const newCurriculum = await findCurriculum({
+            department,
+            ctype,
+        });
+
+        if (newCurriculum) {
+            existingStudent.curriculum = newCurriculum._id;
+        } else {
+            throw new Error(
+                `Curriculum with type ${ctype} and department ${department} not found`
+            );
+        }
 
         // Extracting out the courseID's from the student courses
 
