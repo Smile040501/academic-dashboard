@@ -11,13 +11,13 @@ export default buildSchema(`
 
     type RootQuery {
         getCourse(code: String!): Course!
-        getCourses(): [Course!]!
+        getCourses: [Course!]!
         showAllEligibleCourses(email: String): EligibleCourses!
 
         login(email: String!, tokenId: String!): LoginResponse!
 
         getCurriculum(department: String!, ctype: CurriculumType!): Curriculum!
-        getCurriculums(): [Curriculum!]!
+        getCurriculums: [Curriculum!]!
 
         getSemester(semesterType: String, year: Int): Semester!
         getStudent(email: String!): Student!
