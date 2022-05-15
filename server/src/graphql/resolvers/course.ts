@@ -193,6 +193,16 @@ const getCourse = async (args: { code: string }, _: Request) => {
     }
 };
 
+const getAllCourses = async (_: {}, _2: Request) => {
+    try {
+        const courses = await CourseModel.find();
+
+        return courses.map(transformCourse);
+    } catch (error) {
+        throw error;
+    }
+};
+
 const showAllEligibleCourses = async (args: { email: string }, _: Request) => {
     try {
         const { email } = args;
@@ -579,6 +589,7 @@ const deleteCourses = async (args: { codes: string[] }, _: Request) => {
 
 export default {
     getCourse,
+    getCourses: getAllCourses,
     showAllEligibleCourses,
     addCourse,
     addCourses,

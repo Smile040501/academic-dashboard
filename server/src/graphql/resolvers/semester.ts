@@ -5,16 +5,35 @@ import { Semester } from "../../interfaces/Semester";
 import { transformSemester } from "./common";
 import { findCourseByCode } from "./course";
 
-export const findSemester = async (args: {
-    semesterType: string;
-    year: number;
-}) => {
+export const findSemester = async (semesterType: string, year: number) => {
     try {
         const semester = await SemesterModel.findOne({
-            semesterType: args.semesterType.toUpperCase(),
-            year: args.year,
+            semesterType: semesterType.toUpperCase(),
+            year,
         });
         return semester;
+    } catch (error) {
+        throw error;
+    }
+};
+
+const getSemester = async (
+    args: {
+        semesterType: string;
+        year: number;
+    },
+    _: Request
+) => {
+    try {
+        const { semesterType, year } = args;
+        const semester = await findSemester(semesterType, year);
+        if (!semester) {
+            throw new Error(
+                `Semester with type ${semesterType} and year ${year} not found`
+            );
+        }
+
+        return transformSemester(semester);
     } catch (error) {
         throw error;
     }
@@ -64,10 +83,12 @@ export const addSemester = async (
     try {
         const session = await mongoose.startSession();
         session.startTransaction();
+
         const createdSemester = await createSemester(
             args.semesterInput,
             session
         );
+
         await session.commitTransaction();
 
         return transformSemester(createdSemester);
@@ -83,80 +104,80 @@ export const updateSemester = async (
     try {
         const session = await mongoose.startSession();
         session.startTransaction();
+
         const { semesterInput } = args;
         const semesterType = semesterInput.semesterType;
         const year = semesterInput.year;
-        const existingSemester = await findSemester({
-            semesterType,
-            year,
-        });
 
-        if (existingSemester) {
-            const sc = semesterInput.coursesOffered;
-            const upCoursesOffered = [];
+        const existingSemester = await findSemester(semesterType, year);
 
-            for (let i = 0; i < sc.length; ++i) {
-                const course = await findCourseByCode(sc[i].course);
-                if (!course) {
-                    throw new Error(
-                        `Course with course-code ${sc[i].course} not found`
-                    );
-                }
-
-                upCoursesOffered.push({
-                    ...sc[i],
-                    course: course._id,
-                });
-            }
-
-            existingSemester.coursesOffered = upCoursesOffered;
-            existingSemester.semesterType = semesterInput.semesterType;
-            existingSemester.year = semesterInput.year;
-            const updatedSemester = await existingSemester.save({ session });
-
-            await session.commitTransaction();
-            return transformSemester(updatedSemester);
-        } else {
+        if (!existingSemester) {
             throw new Error(
                 `Semester with type ${semesterType} and year ${year} not found`
             );
         }
+
+        const sc = semesterInput.coursesOffered;
+        const upCoursesOffered = [];
+
+        for (let i = 0; i < sc.length; ++i) {
+            const course = await findCourseByCode(sc[i].course);
+            if (!course) {
+                throw new Error(
+                    `Course with course-code ${sc[i].course} not found`
+                );
+            }
+
+            upCoursesOffered.push({
+                ...sc[i],
+                course: course._id,
+            });
+        }
+
+        existingSemester.coursesOffered = upCoursesOffered;
+        existingSemester.semesterType = semesterInput.semesterType;
+        existingSemester.year = semesterInput.year;
+        const updatedSemester = await existingSemester.save({ session });
+
+        await session.commitTransaction();
+        return transformSemester(updatedSemester);
     } catch (error) {
         throw error;
     }
 };
 
 export const deleteSemester = async (
-    args: { semesterInput: Semester<string> },
+    args: {
+        semesterType: string;
+        year: number;
+    },
     _: Request
 ) => {
     try {
         const session = await mongoose.startSession();
         session.startTransaction();
-        const { semesterInput } = args;
-        const semesterType = semesterInput.semesterType;
-        const year = semesterInput.year;
-        const existingSemester = await findSemester({
-            semesterType,
-            year,
-        });
 
-        if (existingSemester) {
-            await SemesterModel.deleteOne(
-                { _id: existingSemester._id },
-                { session }
-            );
+        const semesterType = args.semesterType;
+        const year = args.year;
 
-            await session.commitTransaction();
-            return existingSemester;
-        } else {
+        const existingSemester = await findSemester(semesterType, year);
+
+        if (!existingSemester) {
             throw new Error(
                 `Semester with type ${semesterType} and year ${year} not found`
             );
         }
+
+        await SemesterModel.deleteOne(
+            { _id: existingSemester._id },
+            { session }
+        );
+
+        await session.commitTransaction();
+        return existingSemester;
     } catch (error) {
         throw error;
     }
 };
 
-export default { addSemester, updateSemester, deleteSemester };
+export default { getSemester, addSemester, updateSemester, deleteSemester };

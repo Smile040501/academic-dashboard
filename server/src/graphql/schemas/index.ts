@@ -11,10 +11,16 @@ export default buildSchema(`
 
     type RootQuery {
         getCourse(code: String!): Course!
+        getCourses(): [Course!]!
         showAllEligibleCourses(email: String): EligibleCourses!
+
         login(email: String!, tokenId: String!): LoginResponse!
 
         getCurriculum(department: String!, ctype: CurriculumType!): Curriculum!
+        getCurriculums(): [Curriculum!]!
+
+        getSemester(semesterType: String, year: Int): Semester!
+        getStudent(email: String!): Student!
     }
 
     type RootMutation {
@@ -25,10 +31,8 @@ export default buildSchema(`
         deleteCourses(codes: [String]): [Course!]!
 
         addCurriculum(curriculumInput: CurriculumInput): Curriculum!
-        addCurricula(curriculaInput: [CurriculumInput]): [Curriculum!]!
-        updateCurricula(curriculaInput: [CurriculumInput]): [Curriculum!]!
-        addOrUpdateCurricula(curriculaInput: [CurriculumInput]): [Curriculum!]!
-        deleteCurricula(departments: [String]): [Curriculum!]!
+        updateCurriculum(curriculaInput: CurriculumInput): Curriculum!
+        deleteCurriculum(department: String!, ctype: CurriculumType!): Curriculum!
 
         addSemester(semesterInput: SemesterInput): Semester!
         updateSemester(semesterInput: SemesterInput): Semester!
@@ -37,9 +41,6 @@ export default buildSchema(`
         addStudent(studentInput: StudentInput): Student!
         addStudents(studentsInput: [StudentInput]): [Student!]!
         updateStudent(studentInput: StudentInput): Student!
-        updateStudents(studentsInput: [StudentInput]): [Student!]!
-        # updateStudentsGrades
-        addOrUpdateStudents(studentsInput: [StudentInput]): [Student!]!
         deleteStudents(studentIds: [String]): [Student!]!
     }
 

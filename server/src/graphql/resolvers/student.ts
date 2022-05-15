@@ -9,10 +9,22 @@ import { findCurriculum } from "./curriculum";
 
 export const findStudentByEmail = async (email: string) => {
     try {
-        const Student = await StudentModel.findOne({
-            email: email.toUpperCase(),
-        });
-        return Student;
+        const student = await StudentModel.findOne({ email });
+        return student;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getStudent = async (email: string, _: Request) => {
+    try {
+        const student = await findStudentByEmail(email);
+
+        if (!student) {
+            throw new Error(`Student with email ${email} not found`);
+        }
+
+        return student;
     } catch (error) {
         throw error;
     }
@@ -35,7 +47,10 @@ export const createStudent = async (
                 );
             }
 
-            const semester = await findSemester(sc[i].semester);
+            const semester = await findSemester(
+                sc[i].semester.semesterType,
+                sc[i].semester.year
+            );
             if (!semester) {
                 throw new Error(
                     `Semester with semester-type ${sc[i].semester.semesterType} and semester-year ${sc[i].semester.year} not found`
@@ -58,10 +73,7 @@ export const createStudent = async (
         const ctype = studentInput.curriculum;
         const department = studentInput.department;
 
-        const newCurriculum = await findCurriculum({
-            department,
-            ctype,
-        });
+        const newCurriculum = await findCurriculum(department, ctype);
 
         if (newCurriculum) {
             newStudent.curriculum = newCurriculum._id;
@@ -125,9 +137,12 @@ export const addStudents = async (
 
 export const updateStudent = async (
     studentInput: Student<string, { semesterType: string; year: number }>,
-    session: any
+    _: Request
 ) => {
     try {
+        const session = await mongoose.startSession();
+        session.startTransaction();
+
         const existingStudent = await findStudentByEmail(studentInput.email);
         if (!existingStudent) {
             throw new Error(
@@ -142,10 +157,7 @@ export const updateStudent = async (
         const ctype = studentInput.curriculum;
         const department = studentInput.department;
 
-        const newCurriculum = await findCurriculum({
-            department,
-            ctype,
-        });
+        const newCurriculum = await findCurriculum(department, ctype);
 
         if (newCurriculum) {
             existingStudent.curriculum = newCurriculum._id;
@@ -168,7 +180,10 @@ export const updateStudent = async (
                 );
             }
 
-            const semester = await findSemester(sc[i].semester);
+            const semester = await findSemester(
+                sc[i].semester.semesterType,
+                sc[i].semester.year
+            );
             if (!semester) {
                 throw new Error(
                     `Semester with semester-type ${sc[i].semester.semesterType} and semester-year ${sc[i].semester.year} not found`
@@ -190,6 +205,8 @@ export const updateStudent = async (
 
         const updatedStudent = await newStudent.save({ session });
 
+        await session.commitTransaction();
+
         return updatedStudent;
     } catch (error) {
         throw error;
@@ -197,18 +214,18 @@ export const updateStudent = async (
 };
 
 export const deleteStudents = async (
-    args: { emails: string[] },
+    args: { studentIds: string[] },
     _: Request
 ) => {
     try {
         const session = await mongoose.startSession();
         session.startTransaction();
 
-        const { emails } = args;
+        const { studentIds } = args;
         const deletedStudents = [];
 
         // Deleting all the courses
-        for (let email of emails) {
+        for (let email of studentIds) {
             const existingStudent = await findStudentByEmail(email);
             if (!existingStudent) {
                 throw new Error(
@@ -233,6 +250,7 @@ export const deleteStudents = async (
 };
 
 export default {
+    getStudent,
     addStudent,
     addStudents,
     updateStudent,
