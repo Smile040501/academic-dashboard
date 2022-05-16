@@ -6,6 +6,8 @@ import { transformStudent } from "./common";
 import { findCourseByCode } from "./course";
 import { findSemester } from "./semester";
 import { findCurriculum } from "./curriculum";
+import { HttpError } from "../../interfaces/HttpError";
+import { httpStatusNames, httpStatusTypes } from "../../utils/httpStatus";
 
 export const findStudentByEmail = async (email: string) => {
     try {
@@ -21,7 +23,9 @@ export const getStudent = async (email: string, _: Request) => {
         const student = await findStudentByEmail(email);
 
         if (!student) {
-            throw new Error(`Student with email ${email} not found`);
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
         }
 
         return student;
@@ -42,9 +46,12 @@ export const createStudent = async (
         for (let i = 0; i < sc.length; ++i) {
             const course = await findCourseByCode(sc[i].course);
             if (!course) {
-                throw new Error(
-                    `Course with course-code ${sc[i].course} not found`
-                );
+                const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+                const error = new HttpError(nf.message, nf.status);
+                throw error;
+                // throw new Error(
+                //     `Course with course-code ${sc[i].course} not found`
+                // );
             }
 
             const semester = await findSemester(
@@ -52,9 +59,12 @@ export const createStudent = async (
                 sc[i].semester.year
             );
             if (!semester) {
-                throw new Error(
-                    `Semester with semester-type ${sc[i].semester.semesterType} and semester-year ${sc[i].semester.year} not found`
-                );
+                const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+                const error = new HttpError(nf.message, nf.status);
+                throw error;
+                // throw new Error(
+                //     `Semester with semester-type ${sc[i].semester.semesterType} and semester-year ${sc[i].semester.year} not found`
+                // );
             }
 
             upStudentCourses.push({
@@ -78,9 +88,12 @@ export const createStudent = async (
         if (newCurriculum) {
             newStudent.curriculum = newCurriculum._id;
         } else {
-            throw new Error(
-                `Curriculum with type ${ctype} and department ${department} not found`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+            // throw new Error(
+            //     `Curriculum with type ${ctype} and department ${department} not found`
+            // );
         }
 
         const createdStudent = await newStudent.save({ session });
@@ -145,9 +158,12 @@ export const updateStudent = async (
 
         const existingStudent = await findStudentByEmail(studentInput.email);
         if (!existingStudent) {
-            throw new Error(
-                `Student with Student-email ${studentInput.email} doesn't exists`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+            // throw new Error(
+            //     `Student with Student-email ${studentInput.email} doesn't exists`
+            // );
         }
 
         existingStudent.name = studentInput.name;
@@ -162,9 +178,12 @@ export const updateStudent = async (
         if (newCurriculum) {
             existingStudent.curriculum = newCurriculum._id;
         } else {
-            throw new Error(
-                `Curriculum with type ${ctype} and department ${department} not found`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+            // throw new Error(
+            //     `Curriculum with type ${ctype} and department ${department} not found`
+            // );
         }
 
         // Extracting out the courseID's from the student courses
@@ -175,9 +194,12 @@ export const updateStudent = async (
         for (let i = 0; i < sc.length; ++i) {
             const course = await findCourseByCode(sc[i].course);
             if (!course) {
-                throw new Error(
-                    `Course with course-code ${sc[i].course} not found`
-                );
+                const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+                const error = new HttpError(nf.message, nf.status);
+                throw error;
+                // throw new Error(
+                //     `Course with course-code ${sc[i].course} not found`
+                // );
             }
 
             const semester = await findSemester(
@@ -185,9 +207,12 @@ export const updateStudent = async (
                 sc[i].semester.year
             );
             if (!semester) {
-                throw new Error(
-                    `Semester with semester-type ${sc[i].semester.semesterType} and semester-year ${sc[i].semester.year} not found`
-                );
+                const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+                const error = new HttpError(nf.message, nf.status);
+                throw error;
+                // throw new Error(
+                //     `Semester with semester-type ${sc[i].semester.semesterType} and semester-year ${sc[i].semester.year} not found`
+                // );
             }
 
             upStudentCourses.push({
@@ -228,9 +253,12 @@ export const deleteStudents = async (
         for (let email of studentIds) {
             const existingStudent = await findStudentByEmail(email);
             if (!existingStudent) {
-                throw new Error(
-                    `Student with Student-email ${email} doesn't exists`
-                );
+                const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+                const error = new HttpError(nf.message, nf.status);
+                throw error;
+                // throw new Error(
+                //     `Student with Student-email ${email} doesn't exists`
+                // );
             }
 
             await StudentModel.deleteOne(

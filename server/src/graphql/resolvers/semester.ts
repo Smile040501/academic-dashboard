@@ -4,6 +4,8 @@ import { SemesterModel } from "../../models";
 import { Semester } from "../../interfaces/Semester";
 import { transformSemester } from "./common";
 import { findCourseByCode } from "./course";
+import { HttpError } from "../../interfaces/HttpError";
+import { httpStatusNames, httpStatusTypes } from "../../utils/httpStatus";
 
 export const findSemester = async (semesterType: string, year: number) => {
     try {
@@ -28,9 +30,12 @@ const getSemester = async (
         const { semesterType, year } = args;
         const semester = await findSemester(semesterType, year);
         if (!semester) {
-            throw new Error(
-                `Semester with type ${semesterType} and year ${year} not found`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+            // throw new Error(
+            //     `Semester with type ${semesterType} and year ${year} not found`
+            // );
         }
 
         return transformSemester(semester);
@@ -51,9 +56,12 @@ export const createSemester = async (
         for (let i = 0; i < sc.length; ++i) {
             const course = await findCourseByCode(sc[i].course);
             if (!course) {
-                throw new Error(
-                    `Course with course-code ${sc[i].course} not found`
-                );
+                const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+                const error = new HttpError(nf.message, nf.status);
+                throw error;
+                // throw new Error(
+                //     `Course with course-code ${sc[i].course} not found`
+                // );
             }
 
             upCoursesOffered.push({
@@ -84,6 +92,18 @@ export const addSemester = async (
         const session = await mongoose.startSession();
         session.startTransaction();
 
+        const { semesterInput } = args;
+        const semesterType = semesterInput.semesterType;
+        const year = semesterInput.year;
+
+        const existingSemester = await findSemester(semesterType, year);
+
+        if (existingSemester) {
+            const conflict = httpStatusTypes[httpStatusNames.CONFLICT];
+            const error = new HttpError(conflict.message, conflict.status);
+            throw error;
+        }
+
         const createdSemester = await createSemester(
             args.semesterInput,
             session
@@ -112,9 +132,12 @@ export const updateSemester = async (
         const existingSemester = await findSemester(semesterType, year);
 
         if (!existingSemester) {
-            throw new Error(
-                `Semester with type ${semesterType} and year ${year} not found`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+            // throw new Error(
+            //     `Semester with type ${semesterType} and year ${year} not found`
+            // );
         }
 
         const sc = semesterInput.coursesOffered;
@@ -123,9 +146,12 @@ export const updateSemester = async (
         for (let i = 0; i < sc.length; ++i) {
             const course = await findCourseByCode(sc[i].course);
             if (!course) {
-                throw new Error(
-                    `Course with course-code ${sc[i].course} not found`
-                );
+                const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+                const error = new HttpError(nf.message, nf.status);
+                throw error;
+                // throw new Error(
+                //     `Course with course-code ${sc[i].course} not found`
+                // );
             }
 
             upCoursesOffered.push({
@@ -163,9 +189,12 @@ export const deleteSemester = async (
         const existingSemester = await findSemester(semesterType, year);
 
         if (!existingSemester) {
-            throw new Error(
-                `Semester with type ${semesterType} and year ${year} not found`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+            // throw new Error(
+            //     `Semester with type ${semesterType} and year ${year} not found`
+            // );
         }
 
         await SemesterModel.deleteOne(

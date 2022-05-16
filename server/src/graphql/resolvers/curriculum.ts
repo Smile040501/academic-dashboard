@@ -4,6 +4,8 @@ import { CurriculumModel } from "../../models";
 import { Curriculum } from "../../interfaces/Curriculum";
 import { transformCurriculum } from "./common";
 import { getCourses } from "./course";
+import { HttpError } from "../../interfaces/HttpError";
+import { httpStatusNames, httpStatusTypes } from "../../utils/httpStatus";
 
 export const findCurriculum = async (department: string, ctype: string) => {
     try {
@@ -28,9 +30,12 @@ const getCurriculum = async (
         const { department, ctype } = args;
         const curriculum = await findCurriculum(department, ctype);
         if (!curriculum) {
-            throw new Error(
-                `Curriculum with type ${ctype} and department ${department} not found`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+            // throw new Error(
+            //     `Curriculum with type ${ctype} and department ${department} not found`
+            // );
         }
 
         return transformCurriculum(curriculum);
@@ -144,9 +149,12 @@ export const updateCurriculum = async (
         const existingCurriculum = await findCurriculum(ctype, department);
 
         if (!existingCurriculum) {
-            throw new Error(
-                `Curriculum with type ${ctype} and department ${department} not found`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+            // throw new Error(
+            //     `Curriculum with type ${ctype} and department ${department} not found`
+            // );
         }
 
         const pmCourses = await getCourses(curriculumInput.pm.courses);
@@ -221,9 +229,12 @@ export const deleteCurriculum = async (
         const existingCurriculum = await findCurriculum(ctype, department);
 
         if (!existingCurriculum) {
-            throw new Error(
-                `Curriculum with type ${ctype} and department ${department} not found`
-            );
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+            // throw new Error(
+            //     `Curriculum with type ${ctype} and department ${department} not found`
+            // );
         }
 
         await CurriculumModel.deleteOne(
