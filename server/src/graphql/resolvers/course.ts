@@ -21,7 +21,7 @@ export const findCourseByCode = async (code: string) => {
 export const getCourses = async (coursesCodes: string[]) => {
     try {
         const courses = [];
-        for (let code in coursesCodes) {
+        for (let code of coursesCodes) {
             const course = await findCourseByCode(code);
             if (!course) {
                 const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
@@ -37,11 +37,11 @@ export const getCourses = async (coursesCodes: string[]) => {
 };
 
 export const isCompleteGrade = (grade: string) => {
-    return ["A", "B", "C", "D", "E", "U"].includes(grade.toUpperCase());
+    return ["S", "A", "B", "C", "D", "E", "U"].includes(grade.toUpperCase());
 };
 
 export const isPassGrade = (grade: string) => {
-    return ["A", "B", "C", "D", "E"].includes(grade.toUpperCase());
+    return ["S", "A", "B", "C", "D", "E"].includes(grade.toUpperCase());
 };
 
 export const getPendingCourses = (
@@ -60,7 +60,10 @@ export const isEligibleCourse = (
     completedCourses: Types.ObjectId[]
 ) => {
     // NOTE: Currently assuming that a course and its co-requisites will have the same pre-requisites and co-requisites
-    return isSubset<Types.ObjectId>(course.prerequisites, completedCourses);
+    return isSubset<String>(
+        course.prerequisites.map((c) => c.toString()),
+        completedCourses.map((c) => c.toString())
+    );
 };
 
 export const getEligibleCourses = async (
@@ -444,7 +447,16 @@ const addCourses = async (
                 session
             );
             createdCourses.push(createdCourse);
-            codeToCourseId[course.code] = createdCourse._id;
+            codeToCourseId[createdCourse.code] = createdCourse._id;
+        }
+
+        const allCourses = await CourseModel.find(
+            {},
+            { _id: 1, code: 1 },
+            session
+        );
+        for (let course of allCourses) {
+            codeToCourseId[course.code] = course._id;
         }
 
         // Updating the pre-requisites and corequisites of each course

@@ -28,7 +28,7 @@ const inputTypes = `
     }
 
     input SemesterCourseInput {
-        course: ID!
+        course: String!
         slots: [String!]!
         faculty: String!
     }
@@ -39,10 +39,15 @@ const inputTypes = `
         coursesOffered: [SemesterCourseInput!]!
     }
 
+    input SemesterStudentCourseInput {
+        semesterType: String!
+        year: Int!
+    }
+
     input StudentCourseInput {
         course: String!     # Course-code
         grade: String
-        semester: ID!
+        semester: SemesterStudentCourseInput!
     }
 
     input StudentInput {

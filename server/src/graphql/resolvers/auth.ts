@@ -3,7 +3,6 @@ import jwt from "jsonwebtoken";
 import { getProfileInfo } from "../../utils/googleOAuth";
 import { StudentModel } from "../../models";
 import {
-    ADMIN_EMAIL,
     JWT_ACCESS_TOKEN_EXPIRATION,
     JWT_ACCESS_TOKEN_EXPIRATION_STR,
 } from "../../utils/constants";
@@ -18,7 +17,7 @@ const login = async (args: { email: string; tokenId: string }, _: Request) => {
         if (
             process.env.NODE_ENV !== "development" &&
             !student &&
-            ADMIN_EMAIL !== email
+            process.env.ADMIN_EMAIL !== email
         ) {
             const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
             const error = new HttpError(nf.message, nf.status);

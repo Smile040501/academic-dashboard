@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 
-import { CourseModel, SemesterModel } from "../../models";
+import { CourseModel, SemesterModel, CurriculumModel } from "../../models";
 import {
     Course,
     EligibleCourseEntry,
@@ -45,6 +45,20 @@ export const getCourse = async (cid: Types.ObjectId): Promise<any> => {
             throw error;
         }
         return transformCourse(course);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const getCurriculum = async (cid: Types.ObjectId): Promise<any> => {
+    try {
+        const curriculum = await CurriculumModel.findById(cid);
+        if (!curriculum) {
+            const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
+            const error = new HttpError(nf.message, nf.status);
+            throw error;
+        }
+        return transformCurriculum(curriculum);
     } catch (error) {
         throw error;
     }
@@ -102,12 +116,30 @@ export const transformCurriculum = (curriculum: Curriculum<Types.ObjectId>) => {
     try {
         return {
             ...curriculum._doc,
-            pm: getCourses.bind(this, curriculum.pm.courses),
-            pme: getCourses.bind(this, curriculum.pme.courses),
-            hse: getCourses.bind(this, curriculum.hse.courses),
-            sme: getCourses.bind(this, curriculum.sme.courses),
-            pmt: getCourses.bind(this, curriculum.pmt.courses),
-            oe: getCourses.bind(this, curriculum.oe.courses),
+            pm: {
+                ...curriculum.pm,
+                courses: getCourses.bind(this, curriculum.pm.courses),
+            },
+            pme: {
+                ...curriculum.pme,
+                courses: getCourses.bind(this, curriculum.pme.courses),
+            },
+            hse: {
+                ...curriculum.hse,
+                courses: getCourses.bind(this, curriculum.hse.courses),
+            },
+            sme: {
+                ...curriculum.sme,
+                courses: getCourses.bind(this, curriculum.sme.courses),
+            },
+            pmt: {
+                ...curriculum.pmt,
+                courses: getCourses.bind(this, curriculum.pmt.courses),
+            },
+            oe: {
+                ...curriculum.oe,
+                courses: getCourses.bind(this, curriculum.oe.courses),
+            },
             createdAt: dateToString(curriculum.createdAt),
             updatedAt: dateToString(curriculum.updatedAt),
         };
@@ -138,6 +170,7 @@ export const transformStudent = (
     try {
         return {
             ...student._doc,
+            curriculum: getCurriculum.bind(this, student.curriculum),
             courses: student.courses.map((crs) => ({
                 ...crs,
                 course: getCourse.bind(this, crs.course),

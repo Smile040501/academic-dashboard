@@ -18,9 +18,9 @@ export const findStudentByEmail = async (email: string) => {
     }
 };
 
-export const getStudent = async (email: string, _: Request) => {
+export const getStudent = async (args: { email: string }, _: Request) => {
     try {
-        const student = await findStudentByEmail(email);
+        const student = await findStudentByEmail(args.email.toString());
 
         if (!student) {
             const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
@@ -28,7 +28,7 @@ export const getStudent = async (email: string, _: Request) => {
             throw error;
         }
 
-        return student;
+        return transformStudent(student);
     } catch (error) {
         throw error;
     }
@@ -137,24 +137,28 @@ export const addStudents = async (
         session.startTransaction();
         const { studentsInput } = args;
         for (let studentInput of studentsInput) {
-            const createdStudent = addStudent({ studentInput }, _);
+            const createdStudent = await createStudent(studentInput, session);
             createStudents.push(createdStudent);
         }
         await session.commitTransaction();
 
-        return createStudents;
+        return createStudents.map(transformStudent);
     } catch (error) {
         throw error;
     }
 };
 
 export const updateStudent = async (
-    studentInput: Student<string, { semesterType: string; year: number }>,
+    args: {
+        studentInput: Student<string, { semesterType: string; year: number }>;
+    },
     _: Request
 ) => {
     try {
         const session = await mongoose.startSession();
         session.startTransaction();
+
+        const { studentInput } = args;
 
         const existingStudent = await findStudentByEmail(studentInput.email);
         if (!existingStudent) {
@@ -175,9 +179,7 @@ export const updateStudent = async (
 
         const newCurriculum = await findCurriculum(department, ctype);
 
-        if (newCurriculum) {
-            existingStudent.curriculum = newCurriculum._id;
-        } else {
+        if (!newCurriculum) {
             const nf = httpStatusTypes[httpStatusNames.NOT_FOUND];
             const error = new HttpError(nf.message, nf.status);
             throw error;
@@ -185,6 +187,8 @@ export const updateStudent = async (
             //     `Curriculum with type ${ctype} and department ${department} not found`
             // );
         }
+
+        existingStudent.curriculum = newCurriculum._id;
 
         // Extracting out the courseID's from the student courses
 
@@ -222,17 +226,13 @@ export const updateStudent = async (
             });
         }
 
-        const newStudent = new StudentModel({
-            ...existingStudent,
-            department: studentInput.department.toUpperCase(),
-            courses: upStudentCourses,
-        });
+        existingStudent.courses = upStudentCourses;
 
-        const updatedStudent = await newStudent.save({ session });
+        const updatedStudent = await existingStudent.save({ session });
 
         await session.commitTransaction();
 
-        return updatedStudent;
+        return transformStudent(updatedStudent);
     } catch (error) {
         throw error;
     }
